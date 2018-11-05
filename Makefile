@@ -1,20 +1,22 @@
 install: install-deps
 
-run:
-	npx babel-node -- 'src/bin/hexlet.js' 10
+develop:
+	npm run webpack-serve
 
 install-deps:
 	npm install
 
 build:
 	rm -rf dist
-	npm run build
+	NODE_ENV=production npm run webpack
 
 test:
 	npm test
 
 lint:
-	npx eslint .
+	npm run eslint .
 
 publish:
 	npm publish
+
+.PHONY: test
