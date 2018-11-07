@@ -26,7 +26,6 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './src/template/jumbotron.html',
-      filename: 'index.html',
     }),
   ],
 };
