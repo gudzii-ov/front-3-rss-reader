@@ -1,20 +1,20 @@
 install: install-deps
 
 develop:
-	npm run webpack-serve
+	npx webpack-serve
 
 install-deps:
 	npm install
 
 build:
 	rm -rf dist
-	NODE_ENV=production npm run webpack
+	NODE_ENV=production npx webpack
 
 test:
 	npm test
 
 lint:
-	npm run eslint .
+	npx eslint .
 
 publish:
 	npm publish
