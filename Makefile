@@ -19,4 +19,9 @@ lint:
 publish:
 	npm publish
 
+deploy: build
+	cd dist/
+	surge
+	cd ../
+
 .PHONY: test
