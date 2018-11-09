@@ -1,6 +1,7 @@
 import validator from 'validator';
 import WatchJS from 'melanke-watchjs';
 import axios from 'axios';
+import rssParse from './rss-parser';
 
 const { watch } = WatchJS;
 
@@ -20,12 +21,6 @@ export default () => {
     return isURL && !isAdded;
   };
 
-  const parseRssFead = (feedSource) => {
-    const parser = new DOMParser();
-    const feedString = parser.parseFromString(feedSource, 'application/xml');
-    return feedString;
-  };
-
   const inputHandler = (evt) => {
     const inputValue = evt.target.value;
     appState.isInputValid = validateInput(inputValue);
@@ -40,7 +35,7 @@ export default () => {
       appState.isInputValid = null;
 
       axios.get(newFeedAddress)
-        .then(response => parseRssFead(response.data.body))
+        .then(response => rssParse(response.data.body))
         .catch(err => console.log(err.message))
         .then(rss => console.log(rss));
     }
