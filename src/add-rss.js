@@ -10,6 +10,7 @@ export default () => {
   const appState = {
     isInputValid: null,
     feedsLinks: [],
+    isLoadingFeed: false,
   };
 
   const form = document.getElementById('rss-reader');
@@ -19,6 +20,7 @@ export default () => {
   const validateInput = (inputText) => {
     const isURL = validator.isURL(inputText);
     const isAdded = appState.feedsLinks.includes(inputText);
+    console.log(isAdded);
 
     return isURL && !isAdded;
   };
@@ -32,14 +34,16 @@ export default () => {
     if (appState.isInputValid) {
       const corsProxy = 'https://cors-proxy.htmldriven.com/?url=';
       const newFeedAddress = `${corsProxy}${inputField.value}`;
-      appState.feedsLinks.push(newFeedAddress);
+      appState.feedsLinks.push(inputField.value);
       inputField.value = '';
       appState.isInputValid = null;
 
+      appState.isLoadingFeed = true;
       axios.get(newFeedAddress)
         .then(response => rssParse(response.data.body))
         .catch(err => console.log(err.message))
         .then((feedObj) => {
+          appState.isLoadingFeed = false;
           const feedElement = utils.getFeedElement(feedObj);
           feedsBlock.appendChild(feedElement);
         });
@@ -54,6 +58,14 @@ export default () => {
       inputField.style.outline = '3px solid green';
     } else {
       inputField.style.outline = '3px solid red';
+    }
+  });
+
+  watch(appState, 'isLoadingFeed', () => {
+    if (appState.isLoadingFeed) {
+      console.log('loading...');
+    } else {
+      console.log('loading done');
     }
   });
 

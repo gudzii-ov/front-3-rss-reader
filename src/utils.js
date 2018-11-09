@@ -1,6 +1,9 @@
 const getFeedElement = (feedObject) => {
-  console.log(feedObject);
+  const feedContainerElement = document.createElement('div');
+  feedContainerElement.classList.add('container');
+
   const feedArticle = document.createElement('article');
+  feedContainerElement.appendChild(feedArticle);
 
   const feedTitle = feedObject.title;
   const feedDescription = feedObject.description;
@@ -36,7 +39,7 @@ const getFeedElement = (feedObject) => {
   feedArticle.appendChild(descriptionElement);
   feedArticle.appendChild(itemsFragment);
 
-  return feedArticle;
+  return feedContainerElement;
 };
 
 export default { getFeedElement };
