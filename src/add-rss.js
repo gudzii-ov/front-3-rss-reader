@@ -4,30 +4,39 @@ import WatchJS from 'melanke-watchjs';
 const { watch } = WatchJS;
 
 export default () => {
-  const inputState = {
-    isValid: null,
-  };
-
   const appState = {
-    feeds: [],
+    isInputValid: null,
+    feedsLinks: [],
   };
 
+  const form = document.getElementById('rss-reader');
   const inputField = document.getElementById('rss-reader-field');
 
   const validateText = (text) => {
     const isURL = validator.isURL(text);
-    const isAdded = appState.feeds.includes(text);
+    const isAdded = appState.feedsLinks.includes(text);
 
     return isURL && !isAdded;
   };
 
   const inputHandler = (evt) => {
     const inputValue = evt.target.value;
-    inputState.isValid = validateText(inputValue);
+    appState.isInputValid = validateText(inputValue);
   };
 
-  watch(inputState, 'isValid', () => {
-    if (inputState.isValid) {
+  const submitFormHandler = (evt) => {
+    if (appState.isInputValid) {
+      appState.feedsLinks.push(inputField.value);
+      inputField.value = '';
+      appState.isInputValid = null;
+    }
+    evt.preventDefault();
+  };
+
+  watch(appState, 'isInputValid', () => {
+    if (appState.isInputValid === null) {
+      inputField.style.outline = 'none';
+    } else if (appState.isInputValid) {
       inputField.style.outline = '3px solid green';
     } else {
       inputField.style.outline = '3px solid red';
@@ -35,4 +44,5 @@ export default () => {
   });
 
   inputField.addEventListener('input', inputHandler);
+  form.addEventListener('submit', submitFormHandler);
 };
