@@ -20,7 +20,6 @@ export default () => {
   const validateInput = (inputText) => {
     const isURL = validator.isURL(inputText);
     const isAdded = appState.feedsLinks.includes(inputText);
-    console.log(isAdded);
 
     return isURL && !isAdded;
   };
