@@ -42,4 +42,14 @@ const getFeedElement = (feedObject) => {
   return feedContainerElement;
 };
 
-export default { getFeedElement };
+const showLoadingWindow = () => {
+  const loaderElement = document.getElementById('loading-message');
+  loaderElement.classList.remove('d-none');
+};
+
+const hideLoadingWindow = () => {
+  const loaderElement = document.getElementById('loading-message');
+  loaderElement.classList.add('d-none');
+};
+
+export default { getFeedElement, showLoadingWindow, hideLoadingWindow };

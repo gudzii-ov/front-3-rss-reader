@@ -32,13 +32,14 @@ export default () => {
 
   const submitFormHandler = (evt) => {
     if (appState.isInputValid) {
+      appState.isLoadingFeed = true;
       const corsProxy = 'https://cors-proxy.htmldriven.com/?url=';
       const newFeedAddress = `${corsProxy}${inputField.value}`;
       appState.feedsLinks.push(inputField.value);
       inputField.value = '';
       appState.isInputValid = null;
 
-      appState.isLoadingFeed = true;
+
       axios.get(newFeedAddress)
         .then(response => rssParse(response.data.body))
         .catch(err => console.log(err.message))
@@ -63,9 +64,9 @@ export default () => {
 
   watch(appState, 'isLoadingFeed', () => {
     if (appState.isLoadingFeed) {
-      console.log('loading...');
+      utils.showLoadingWindow();
     } else {
-      console.log('loading done');
+      utils.hideLoadingWindow();
     }
   });
 
