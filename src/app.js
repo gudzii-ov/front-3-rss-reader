@@ -16,6 +16,7 @@ export default () => {
   const form = document.getElementById('rss-reader');
   const inputField = document.getElementById('rss-reader-field');
   const feedsBlock = document.querySelector('.feeds-list');
+  const corsProxy = 'https://cors-proxy.htmldriven.com/?url=';
 
   const validateInput = (inputText) => {
     const isURL = validator.isURL(inputText);
@@ -29,21 +30,22 @@ export default () => {
     appState.isInputValid = validateInput(inputValue);
   };
 
+  inputField.addEventListener('input', inputHandler);
+
   const submitFormHandler = (evt) => {
     if (appState.isInputValid) {
+      const feedLink = inputField.value;
       appState.isLoadingFeed = true;
-      const corsProxy = 'https://cors-proxy.htmldriven.com/?url=';
-      const newFeedAddress = `${corsProxy}${inputField.value}`;
-      appState.feedsLinks.push(inputField.value);
       inputField.value = '';
       appState.isInputValid = null;
 
-
-      axios.get(newFeedAddress)
+      axios.get(`${corsProxy}${feedLink}`)
         .then(response => rssParse(response.data.body))
         .catch(err => console.log(err.message))
         .then((feedObj) => {
           appState.isLoadingFeed = false;
+          appState.feedsLinks.push(feedLink);
+
           const feedElement = utils.getFeedElement(feedObj);
           feedsBlock.appendChild(feedElement);
         });
@@ -69,6 +71,5 @@ export default () => {
     }
   });
 
-  inputField.addEventListener('input', inputHandler);
   form.addEventListener('submit', submitFormHandler);
 };
