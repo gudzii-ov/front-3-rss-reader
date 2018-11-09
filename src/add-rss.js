@@ -2,6 +2,7 @@ import validator from 'validator';
 import WatchJS from 'melanke-watchjs';
 import axios from 'axios';
 import rssParse from './rss-parser';
+import utils from './utils';
 
 const { watch } = WatchJS;
 
@@ -13,6 +14,7 @@ export default () => {
 
   const form = document.getElementById('rss-reader');
   const inputField = document.getElementById('rss-reader-field');
+  const feedsBlock = document.querySelector('.feeds-list');
 
   const validateInput = (inputText) => {
     const isURL = validator.isURL(inputText);
@@ -37,7 +39,10 @@ export default () => {
       axios.get(newFeedAddress)
         .then(response => rssParse(response.data.body))
         .catch(err => console.log(err.message))
-        .then(rss => console.log(rss));
+        .then((feedObj) => {
+          const feedElement = utils.getFeedElement(feedObj);
+          feedsBlock.appendChild(feedElement);
+        });
     }
     evt.preventDefault();
   };
