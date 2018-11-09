@@ -1,5 +1,6 @@
 import validator from 'validator';
 import WatchJS from 'melanke-watchjs';
+import axios from 'axios';
 
 const { watch } = WatchJS;
 
@@ -12,23 +13,36 @@ export default () => {
   const form = document.getElementById('rss-reader');
   const inputField = document.getElementById('rss-reader-field');
 
-  const validateText = (text) => {
-    const isURL = validator.isURL(text);
-    const isAdded = appState.feedsLinks.includes(text);
+  const validateInput = (inputText) => {
+    const isURL = validator.isURL(inputText);
+    const isAdded = appState.feedsLinks.includes(inputText);
 
     return isURL && !isAdded;
   };
 
+  const parseRssFead = (feedSource) => {
+    const parser = new DOMParser();
+    const feedString = parser.parseFromString(feedSource, 'application/xml');
+    return feedString;
+  };
+
   const inputHandler = (evt) => {
     const inputValue = evt.target.value;
-    appState.isInputValid = validateText(inputValue);
+    appState.isInputValid = validateInput(inputValue);
   };
 
   const submitFormHandler = (evt) => {
     if (appState.isInputValid) {
-      appState.feedsLinks.push(inputField.value);
+      const corsProxy = 'https://cors-proxy.htmldriven.com/?url=';
+      const newFeedAddress = `${corsProxy}${inputField.value}`;
+      appState.feedsLinks.push(newFeedAddress);
       inputField.value = '';
       appState.isInputValid = null;
+
+      axios.get(newFeedAddress)
+        .then(response => parseRssFead(response.data.body))
+        .catch(err => console.log(err.message))
+        .then(rss => console.log(rss));
     }
     evt.preventDefault();
   };
