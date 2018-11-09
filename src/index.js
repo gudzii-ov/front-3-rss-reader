@@ -1,5 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import addRss from './add-rss';
+import app from './app';
 
-addRss();
+app();
