@@ -1,15 +1,13 @@
 import $ from 'jquery';
 
 const getFeedElement = (feedObject) => {
+  const { feedTitle, feedDescription, items: feedItems } = feedObject;
+
   const feedContainerElement = document.createElement('div');
   feedContainerElement.classList.add('container');
 
   const feedArticle = document.createElement('article');
   feedContainerElement.appendChild(feedArticle);
-
-  const feedTitle = feedObject.title;
-  const feedDescription = feedObject.description;
-  const feedItems = feedObject.items;
 
   const titleElement = document.createElement('h3');
   titleElement.textContent = feedTitle;
@@ -20,11 +18,17 @@ const getFeedElement = (feedObject) => {
   const itemsBlock = document.createElement('ul');
   itemsBlock.classList.add('list-group');
 
-  const itemsFragment = document.createDocumentFragment();
+  const itemsKeys = Object.keys(feedItems);
 
-  feedItems.forEach((item) => {
-    const itemTitle = item.title;
-    const itemLink = item.link;
+  const itemsFragment = document.createDocumentFragment();
+  itemsKeys.forEach((item) => {
+    const {
+      nodeTitle: itemTitle,
+      nodeLink: itemLink,
+    } = feedItems[item];
+
+    console.log(itemTitle);
+    console.log(itemLink);
 
     const itemLinkElement = document.createElement('a');
     itemLinkElement.setAttribute('href', itemLink);
