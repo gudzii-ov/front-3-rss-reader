@@ -11,6 +11,10 @@ export default () => {
     isInputValid: null,
     feedsLinks: [],
     isLoadingFeed: false,
+    descriptionBtn: {
+      clicked: false,
+      btnNode: null,
+    },
   };
 
   const form = document.getElementById('rss-reader');
@@ -18,9 +22,9 @@ export default () => {
   const feedsBlock = document.querySelector('.feeds-list');
   const corsProxy = 'https://cors-proxy.htmldriven.com/?url=';
 
-  const validateInput = (inputText) => {
-    const isURL = validator.isURL(inputText);
-    const isAdded = appState.feedsLinks.includes(inputText);
+  const validateInput = (feedLink) => {
+    const isURL = validator.isURL(feedLink);
+    const isAdded = appState.feedsLinks.includes(feedLink);
 
     return isURL && !isAdded;
   };
@@ -36,16 +40,18 @@ export default () => {
     if (appState.isInputValid) {
       const feedLink = inputField.value;
       appState.isLoadingFeed = true;
-      inputField.value = '';
       appState.isInputValid = null;
 
       axios.get(`${corsProxy}${feedLink}`)
         .then(response => rssParse(response.data.body))
-        .catch(err => console.log(err.message))
+        .catch((err) => {
+          utils.showModal('Error', err.message);
+        })
         .then((feedObj) => {
           appState.isLoadingFeed = false;
           appState.feedsLinks.push(feedLink);
-
+          console.log(appState.feedsLinks);
+          inputField.value = '';
           const feedElement = utils.getFeedElement(feedObj);
           feedsBlock.appendChild(feedElement);
         });
@@ -53,13 +59,15 @@ export default () => {
     evt.preventDefault();
   };
 
+  form.addEventListener('submit', submitFormHandler);
+
   watch(appState, 'isInputValid', () => {
     if (appState.isInputValid === null) {
       inputField.style.outline = 'none';
     } else if (appState.isInputValid) {
-      inputField.style.outline = '3px solid green';
+      inputField.classList.remove('border', 'border-danger');
     } else {
-      inputField.style.outline = '3px solid red';
+      inputField.classList.add('border', 'border-danger');
     }
   });
 
@@ -70,6 +78,4 @@ export default () => {
       utils.hideLoadingWindow();
     }
   });
-
-  form.addEventListener('submit', submitFormHandler);
 };

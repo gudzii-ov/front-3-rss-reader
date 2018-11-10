@@ -1,4 +1,7 @@
+import $ from 'jquery';
+
 const getFeedElement = (feedObject) => {
+  console.log('Begin feed processing');
   const feedContainerElement = document.createElement('div');
   feedContainerElement.classList.add('container');
 
@@ -52,4 +55,16 @@ const hideLoadingWindow = () => {
   loaderElement.classList.add('d-none');
 };
 
-export default { getFeedElement, showLoadingWindow, hideLoadingWindow };
+const showModal = (title, message) => {
+  const modalElement = document.getElementById('modal-window');
+  const modalTitle = modalElement.querySelector('.modal-title');
+  const modalBody = modalElement.querySelector('.modal-body');
+  modalTitle.textContent = title;
+  modalBody.textContent = message;
+
+  $('#modal-window').modal('show');
+};
+
+export default {
+  getFeedElement, showLoadingWindow, hideLoadingWindow, showModal,
+};

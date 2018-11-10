@@ -1,9 +1,10 @@
-import Parser from 'rss-parser';
+export default (feedSource) => {
+  const parser = new DOMParser();
+  const feedDOM = parser.parseFromString(feedSource, 'application/xml');
 
-export default (feedXML) => {
-  const parser = new Parser();
+  if (!feedDOM.querySelector('channel')) {
+    throw new Error('Invalid feed source. Try another address');
+  }
 
-  const feedObject = parser.parseString(feedXML);
-
-  return feedObject;
+  console.log(feedDOM);
 };
