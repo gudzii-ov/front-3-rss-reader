@@ -15,7 +15,7 @@ export default () => {
       clicked: false,
       btnNode: null,
     },
-    currentFeedObj: {},
+    currentFeed: '',
   };
 
   const form = document.getElementById('rss-reader');
@@ -41,29 +41,33 @@ export default () => {
     if (appState.isInputValid) {
       const feedLink = inputField.value;
       appState.feedProcessing = 'loading';
+      console.log(appState.feedProcessing);
       appState.isInputValid = null;
 
       axios.get(`${corsProxy}${feedLink}`)
-        .then(
-          (response) => {
-            appState.feedProcessing = 'load-success';
-            rssParse(response.data.body);
-          },
-          () => {
-            appState.feedProcessing = 'load-error';
-          },
-        )
-        .then(
-          (feedObj) => {
-            appState.feedsLinks[feedLink] = feedObj;
-            appState.currentFeed = feedLink;
-            appState.feedProcessing = 'parsing-success';
-            appState.feedProcessing = 'pending';
-          },
-          () => {
-            appState.feedProcessing = 'parse-error';
-          },
-        );
+        .then((response) => {
+          appState.feedProcessing = 'load-success';
+          console.log(appState.feedProcessing);
+          return rssParse(response.data.body);
+        })
+        .catch(() => {
+          appState.feedProcessing = 'load-error';
+        })
+        .then((feedObj) => {
+          appState.feedProcessing = 'parse-error';
+          console.log(appState.feedProcessing);
+          appState.feedsLinks[feedLink] = feedObj;
+          appState.currentFeed = feedLink;
+        })
+        .catch(() => {
+          appState.feedProcessing = 'parse-error';
+        })
+        .then(() => {
+          appState.feedProcessing = 'pending';
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
     }
     evt.preventDefault();
   };
@@ -71,7 +75,6 @@ export default () => {
   form.addEventListener('submit', submitFormHandler);
 
   watch(appState, 'isInputValid', () => {
-    console.log(`validator check: ${appState.isInputValid}`);
     if (appState.isInputValid) {
       inputField.classList.remove('border', 'border-danger');
     } else {
@@ -80,9 +83,8 @@ export default () => {
   });
 
   watch(appState, 'feedProcessing', () => {
-    const currentState = appState.feedProcessing;
-    console.log(`app state: ${currentState}`);
-    switch (currentState) {
+    console.log(`app state: ${appState.feedProcessing}`);
+    switch (appState.feedProcessing) {
       case 'loading':
         utils.showLoadingWindow();
         break;
@@ -94,7 +96,7 @@ export default () => {
         utils.showModal('Load Error', 'Failed to load feed. Maybe wrong address');
         break;
       case 'parsing-success':
-        feedsBlock.appendChild(utils.getFeedElement(appState.currentFeedObj));
+        feedsBlock.appendChild(utils.getFeedElement(appState.feedsLinks[appState.currentFeed]));
         break;
       case 'parse-error':
         utils.showModal('Process Error', 'Failed to process feed. Wrong data');
