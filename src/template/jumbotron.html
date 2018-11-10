@@ -4,38 +4,40 @@
     <title>RSS reader</title>
   </head>
   <body>
-    <div class="jumbotron">
-      <h1 class="display-4">RSS reader</h1>
-      <p>
-        Link for testing: <i>http://lorem-rss.herokuapp.com/feed</i><br>
-        Link for testing: <i>https://habr.com/rss/interesting/</i>
-      </p>
-      <form id="rss-reader">
-        <div class="form-group">
-          <label for="rss-reader-feald">RSS fead address</label>
-          <input type="text" class="form-control" id="rss-reader-field" placeholder="Enter rss fead address">
+    <div class="container">
+      <div class="jumbotron">
+        <h1 class="display-4">RSS reader</h1>
+        <p>
+          Link for testing: <i>http://lorem-rss.herokuapp.com/feed</i><br>
+          Link for testing: <i>https://habr.com/rss/interesting/</i>
+        </p>
+        <form id="rss-reader">
+          <div class="form-group">
+            <label for="rss-reader-feald">RSS fead address</label>
+            <input type="text" class="form-control" id="rss-reader-field" placeholder="Enter rss fead address">
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <div class="alert alert-primary d-none" id="loading-message" role="alert">
+          <h4>Loading rss feed</h4>
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </form>
-      <div class="alert alert-primary d-none" id="loading-message" role="alert">
-        <h4>Loading rss feed</h4>
-      </div>
-      <div class="feeds-list">
-      </div>
-      <div class="modal fade" id="modal-window" tabindex="-1" role="dialog" aria-labelledby="modalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="modalLongTitle">Modal title</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              Lorem Ipsum
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        <div class="feeds-list">
+        </div>
+        <div class="modal fade" id="modal-window" tabindex="-1" role="dialog" aria-labelledby="modalCenterTitle" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modalLongTitle">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                Lorem Ipsum
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+              </div>
             </div>
           </div>
         </div>
