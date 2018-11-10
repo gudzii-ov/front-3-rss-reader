@@ -27,10 +27,11 @@ export default () => {
   const corsProxy = 'https://cors-proxy.htmldriven.com/?url=';
 
   const validateInput = (feedLink) => {
+    const isInputEmpty = inputField.value === '';
     const isURL = validator.isURL(feedLink);
     const isAdded = Object.prototype.hasOwnProperty.call(appState.feedsLinks, feedLink);
 
-    return isURL && !isAdded;
+    return (isURL && !isAdded) || isInputEmpty;
   };
 
   const inputHandler = (evt) => {
