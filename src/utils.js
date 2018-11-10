@@ -31,7 +31,7 @@ const getFeedElement = (feedLink, feedObject) => {
     btnElement.setAttribute('type', 'button');
     btnElement.setAttribute('data-feed-link', feedLink);
     btnElement.setAttribute('data-item-date', itemDate);
-    btnElement.classList.add('btn', 'btn-info', 'float-right');
+    btnElement.classList.add('btn', 'btn-info');
     btnElement.textContent = 'Description';
 
     const itemLinkElement = document.createElement('a');
