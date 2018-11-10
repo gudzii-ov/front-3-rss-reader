@@ -27,9 +27,6 @@ const getFeedElement = (feedObject) => {
       nodeLink: itemLink,
     } = feedItems[item];
 
-    console.log(itemTitle);
-    console.log(itemLink);
-
     const itemLinkElement = document.createElement('a');
     itemLinkElement.setAttribute('href', itemLink);
     itemLinkElement.textContent = itemTitle;
