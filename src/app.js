@@ -9,12 +9,13 @@ const { watch } = WatchJS;
 export default () => {
   const appState = {
     isInputValid: null,
-    feedsLinks: [],
-    isLoadingFeed: false,
+    feedsLinks: {},
+    feedProcessing: 'pending',
     descriptionBtn: {
       clicked: false,
       btnNode: null,
     },
+    currentFeedObj: {},
   };
 
   const form = document.getElementById('rss-reader');
@@ -24,7 +25,7 @@ export default () => {
 
   const validateInput = (feedLink) => {
     const isURL = validator.isURL(feedLink);
-    const isAdded = appState.feedsLinks.includes(feedLink);
+    const isAdded = Object.prototype.hasOwnProperty.call(appState.feedsLinks, feedLink);
 
     return isURL && !isAdded;
   };
@@ -39,22 +40,30 @@ export default () => {
   const submitFormHandler = (evt) => {
     if (appState.isInputValid) {
       const feedLink = inputField.value;
-      appState.isLoadingFeed = true;
+      appState.feedProcessing = 'loading';
       appState.isInputValid = null;
 
       axios.get(`${corsProxy}${feedLink}`)
-        .then(response => rssParse(response.data.body))
-        .catch((err) => {
-          utils.showModal('Error', err.message);
-        })
-        .then((feedObj) => {
-          appState.isLoadingFeed = false;
-          appState.feedsLinks.push(feedLink);
-          console.log(appState.feedsLinks);
-          inputField.value = '';
-          const feedElement = utils.getFeedElement(feedObj);
-          feedsBlock.appendChild(feedElement);
-        });
+        .then(
+          (response) => {
+            appState.feedProcessing = 'load-success';
+            rssParse(response.data.body);
+          },
+          () => {
+            appState.feedProcessing = 'load-error';
+          },
+        )
+        .then(
+          (feedObj) => {
+            appState.feedsLinks[feedLink] = feedObj;
+            appState.currentFeed = feedLink;
+            appState.feedProcessing = 'parsing-success';
+            appState.feedProcessing = 'pending';
+          },
+          () => {
+            appState.feedProcessing = 'parse-error';
+          },
+        );
     }
     evt.preventDefault();
   };
@@ -62,20 +71,39 @@ export default () => {
   form.addEventListener('submit', submitFormHandler);
 
   watch(appState, 'isInputValid', () => {
-    if (appState.isInputValid === null) {
-      inputField.style.outline = 'none';
-    } else if (appState.isInputValid) {
+    console.log(`validator check: ${appState.isInputValid}`);
+    if (appState.isInputValid) {
       inputField.classList.remove('border', 'border-danger');
     } else {
       inputField.classList.add('border', 'border-danger');
     }
   });
 
-  watch(appState, 'isLoadingFeed', () => {
-    if (appState.isLoadingFeed) {
-      utils.showLoadingWindow();
-    } else {
-      utils.hideLoadingWindow();
+  watch(appState, 'feedProcessing', () => {
+    const currentState = appState.feedProcessing;
+    console.log(`app state: ${currentState}`);
+    switch (currentState) {
+      case 'loading':
+        utils.showLoadingWindow();
+        break;
+      case 'load-success':
+        utils.hideLoadingWindow();
+        break;
+      case 'load-error':
+        utils.hideLoadingWindow();
+        utils.showModal('Load Error', 'Failed to load feed. Maybe wrong address');
+        break;
+      case 'parsing-success':
+        feedsBlock.appendChild(utils.getFeedElement(appState.currentFeedObj));
+        break;
+      case 'parse-error':
+        utils.showModal('Process Error', 'Failed to process feed. Wrong data');
+        break;
+      case 'pending':
+        inputField.value = '';
+        break;
+      default:
+        break;
     }
   });
 };
