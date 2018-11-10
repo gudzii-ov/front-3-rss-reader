@@ -21,16 +21,16 @@ const getFeedElement = (feedObject) => {
   const itemsKeys = Object.keys(feedItems);
 
   const itemsFragment = document.createDocumentFragment();
-  itemsKeys.forEach((item) => {
+  itemsKeys.forEach((itemDate) => {
     const {
       nodeTitle: itemTitle,
       nodeLink: itemLink,
-    } = feedItems[item];
+    } = feedItems[itemDate];
 
     const btnElement = document.createElement('button');
     btnElement.setAttribute('type', 'button');
     btnElement.setAttribute('data-feed-title', feedTitle);
-    btnElement.setAttribute('data-item-title', itemTitle);
+    btnElement.setAttribute('data-item-date', itemDate);
     btnElement.classList.add('btn', 'btn-info', 'float-right');
     btnElement.textContent = 'Description';
 
