@@ -27,6 +27,13 @@ const getFeedElement = (feedObject) => {
       nodeLink: itemLink,
     } = feedItems[item];
 
+    const btnElement = document.createElement('button');
+    btnElement.setAttribute('type', 'button');
+    btnElement.setAttribute('data-feed-title', feedTitle);
+    btnElement.setAttribute('data-item-title', itemTitle);
+    btnElement.classList.add('btn', 'btn-info', 'float-right');
+    btnElement.textContent = 'Description';
+
     const itemLinkElement = document.createElement('a');
     itemLinkElement.setAttribute('href', itemLink);
     itemLinkElement.textContent = itemTitle;
@@ -35,6 +42,7 @@ const getFeedElement = (feedObject) => {
     itemElement.classList.add('list-group-item');
 
     itemElement.appendChild(itemLinkElement);
+    itemElement.appendChild(btnElement);
     itemsFragment.appendChild(itemElement);
   });
 
