@@ -16,7 +16,8 @@ export default () => {
     processingErrorObj: {},
     descriptionBtn: {
       clicked: false,
-      btnNode: null,
+      title: '',
+      description: '',
     },
     currentFeed: '',
   };
@@ -86,6 +87,22 @@ export default () => {
 
   form.addEventListener('submit', submitFormHandler);
 
+  const descriptionBtnClickHandler = (evt) => {
+    const clickedBtnElement = evt.target;
+    const feedLink = clickedBtnElement.getAttribute('data-feed-link');
+    const itemDate = clickedBtnElement.getAttribute('data-item-date');
+    const feedObject = appState.feedsLinks[feedLink];
+
+    const itemTitle = feedObject.items[itemDate].nodeTitle;
+    const itemDescription = feedObject.items[itemDate].nodeDescription;
+
+    appState.descriptionBtn.title = itemTitle;
+    appState.descriptionBtn.description = itemDescription;
+    appState.descriptionBtn.clicked = true;
+  };
+
+  feedsBlock.addEventListener('click', descriptionBtnClickHandler);
+
   watch(appState, 'isInputValid', () => {
     if (appState.isInputValid) {
       inputField.classList.remove('border', 'border-danger');
@@ -116,11 +133,21 @@ export default () => {
 
   watch(appState, 'parsingSuccess', () => {
     if (appState.parsingSuccess) {
-      const feedElement = utils.getFeedElement(appState.feedsLinks[appState.currentFeed]);
+      const currentFeedLink = appState.currentFeed;
+      const currentFeedObject = appState.feedsLinks[currentFeedLink];
+      const feedElement = utils.getFeedElement(currentFeedLink, currentFeedObject);
       feedsBlock.appendChild(feedElement);
       inputField.value = '';
       appState.isInputValid = true;
       appState.parsingSuccess = false;
+    }
+  });
+
+  watch(appState, 'descriptionBtn', () => {
+    if (appState.descriptionBtn.clicked) {
+      const { title, description } = appState.descriptionBtn;
+      utils.showModal(title, description);
+      appState.descriptionBtn.clicked = false;
     }
   });
 };

@@ -1,6 +1,6 @@
 import $ from 'jquery';
 
-const getFeedElement = (feedObject) => {
+const getFeedElement = (feedLink, feedObject) => {
   const { feedTitle, feedDescription, items: feedItems } = feedObject;
 
   const feedContainerElement = document.createElement('div');
@@ -29,7 +29,7 @@ const getFeedElement = (feedObject) => {
 
     const btnElement = document.createElement('button');
     btnElement.setAttribute('type', 'button');
-    btnElement.setAttribute('data-feed-title', feedTitle);
+    btnElement.setAttribute('data-feed-link', feedLink);
     btnElement.setAttribute('data-item-date', itemDate);
     btnElement.classList.add('btn', 'btn-info', 'float-right');
     btnElement.textContent = 'Description';
