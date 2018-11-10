@@ -23,7 +23,10 @@ export default () => {
 
   const form = document.getElementById('rss-reader');
   const inputField = document.getElementById('rss-reader-field');
+  const submitBtn = form.querySelector('button[type=submit]');
+
   const feedsBlock = document.querySelector('.feeds-list');
+
   const corsProxy = 'https://cors-proxy.htmldriven.com/?url=';
 
   const validateInput = (feedLink) => {
@@ -93,8 +96,12 @@ export default () => {
 
   watch(appState, 'feedLoading', () => {
     if (appState.feedLoading) {
+      inputField.setAttribute('disabled', 'disabled');
+      submitBtn.setAttribute('disabled', 'disabled');
       utils.showLoadingWindow();
     } else {
+      inputField.removeAttribute('disabled');
+      submitBtn.removeAttribute('disabled');
       utils.hideLoadingWindow();
     }
   });
