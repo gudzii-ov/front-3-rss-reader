@@ -1,7 +1,6 @@
 import $ from 'jquery';
 
 const getFeedElement = (feedObject) => {
-  console.log('Begin feed processing');
   const feedContainerElement = document.createElement('div');
   feedContainerElement.classList.add('container');
 
