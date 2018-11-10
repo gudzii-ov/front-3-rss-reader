@@ -10,7 +10,10 @@ export default () => {
   const appState = {
     isInputValid: null,
     feedsLinks: {},
-    feedProcessing: 'pending',
+    feedLoading: false,
+    parsingSuccess: false,
+    processingError: false,
+    processingErrorObj: {},
     descriptionBtn: {
       clicked: false,
       btnNode: null,
@@ -40,34 +43,38 @@ export default () => {
   const submitFormHandler = (evt) => {
     if (appState.isInputValid) {
       const feedLink = inputField.value;
-      appState.feedProcessing = 'loading';
-      console.log(appState.feedProcessing);
+      appState.feedLoading = true;
       appState.isInputValid = null;
 
       axios.get(`${corsProxy}${feedLink}`)
-        .then((response) => {
-          appState.feedProcessing = 'load-success';
-          console.log(appState.feedProcessing);
-          return rssParse(response.data.body);
-        })
-        .catch(() => {
-          appState.feedProcessing = 'load-error';
-        })
-        .then((feedObj) => {
-          appState.feedProcessing = 'parse-error';
-          console.log(appState.feedProcessing);
-          appState.feedsLinks[feedLink] = feedObj;
-          appState.currentFeed = feedLink;
-        })
-        .catch(() => {
-          appState.feedProcessing = 'parse-error';
-        })
-        .then(() => {
-          appState.feedProcessing = 'pending';
-        })
-        .catch((err) => {
-          console.log(err.message);
-        });
+        .then(
+          (response) => {
+            appState.feedLoading = false;
+            return rssParse(response.data.body);
+          },
+          () => {
+            appState.feedLoading = false;
+            appState.processingError = true;
+            appState.processingErrorObj = {
+              title: 'Load Error',
+              text: 'Failed to load feed. Maybe address unavailable',
+            };
+          },
+        )
+        .then(
+          (feedObj) => {
+            appState.feedsLinks[feedLink] = feedObj;
+            appState.currentFeed = feedLink;
+            appState.parsingSuccess = true;
+          },
+          () => {
+            appState.processingError = true;
+            appState.processingErrorObj = {
+              title: 'Parsing Error',
+              text: 'Failed to process feed. Wrong data. Try another feed address',
+            };
+          },
+        );
     }
     evt.preventDefault();
   };
@@ -82,30 +89,26 @@ export default () => {
     }
   });
 
-  watch(appState, 'feedProcessing', () => {
-    console.log(`app state: ${appState.feedProcessing}`);
-    switch (appState.feedProcessing) {
-      case 'loading':
-        utils.showLoadingWindow();
-        break;
-      case 'load-success':
-        utils.hideLoadingWindow();
-        break;
-      case 'load-error':
-        utils.hideLoadingWindow();
-        utils.showModal('Load Error', 'Failed to load feed. Maybe wrong address');
-        break;
-      case 'parsing-success':
-        feedsBlock.appendChild(utils.getFeedElement(appState.feedsLinks[appState.currentFeed]));
-        break;
-      case 'parse-error':
-        utils.showModal('Process Error', 'Failed to process feed. Wrong data');
-        break;
-      case 'pending':
-        inputField.value = '';
-        break;
-      default:
-        break;
+  watch(appState, 'feedLoading', () => {
+    if (appState.feedLoading) {
+      utils.showLoadingWindow();
+    } else {
+      utils.hideLoadingWindow();
+    }
+  });
+
+  watch(appState, 'processingError', () => {
+    if (appState.processingError) {
+      const { title, text } = appState.processingErrorObj;
+      utils.showModal(title, text);
+      appState.processingError = false;
+    }
+  });
+
+  watch(appState, 'parsingSuccess', () => {
+    if (appState.parsingSuccess) {
+      const feedElement = utils.getFeedElement(appState.feedsLinks[appState.currentFeed]);
+      feedsBlock.appendChild(feedElement);
     }
   });
 };
