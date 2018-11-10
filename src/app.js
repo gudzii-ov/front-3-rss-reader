@@ -8,7 +8,7 @@ const { watch } = WatchJS;
 
 export default () => {
   const appState = {
-    isInputValid: null,
+    isInputValid: true,
     feedsLinks: {},
     feedLoading: false,
     parsingSuccess: false,
@@ -60,12 +60,13 @@ export default () => {
               title: 'Load Error',
               text: 'Failed to load feed. Maybe address unavailable',
             };
+            throw new Error();
           },
         )
         .then(
           (feedObj) => {
-            appState.feedsLinks[feedLink] = feedObj;
             appState.currentFeed = feedLink;
+            appState.feedsLinks[feedLink] = feedObj;
             appState.parsingSuccess = true;
           },
           () => {
@@ -110,6 +111,9 @@ export default () => {
     if (appState.parsingSuccess) {
       const feedElement = utils.getFeedElement(appState.feedsLinks[appState.currentFeed]);
       feedsBlock.appendChild(feedElement);
+      inputField.value = '';
+      appState.isInputValid = true;
+      appState.parsingSuccess = false;
     }
   });
 };
