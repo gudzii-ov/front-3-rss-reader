@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import _ from 'lodash';
 
 const getFeedElement = (feedLink, feedObject) => {
   const { feedTitle, feedDescription, items: feedItems } = feedObject;
@@ -18,14 +19,12 @@ const getFeedElement = (feedLink, feedObject) => {
   const itemsBlock = document.createElement('ul');
   itemsBlock.classList.add('list-group');
 
-  const itemsKeys = Object.keys(feedItems);
-
   const itemsFragment = document.createDocumentFragment();
-  itemsKeys.forEach((itemDate) => {
+  _.forOwn(feedItems, (itemObj, itemDate) => {
     const {
       nodeTitle: itemTitle,
       nodeLink: itemLink,
-    } = feedItems[itemDate];
+    } = itemObj;
 
     const btnElement = document.createElement('button');
     btnElement.setAttribute('type', 'button');
