@@ -139,7 +139,7 @@ export default () => {
       const currentFeedObject = appState.feedsLinks[currentFeedLink];
       const feedElement = utils.getFeedElement(currentFeedLink, currentFeedObject);
       feedsBlock.appendChild(feedElement);
-      appState.isInputValid = true;
+      inputField.value = '';
       appState.parsingSuccess = false;
     }
   });
