@@ -52,7 +52,6 @@ export default () => {
     if (appState.isInputValid) {
       const feedLink = inputField.value;
       appState.feedLoading = true;
-      appState.isInputValid = null;
 
       axios.get(`${corsProxy}${feedLink}`)
         .then(
