@@ -158,11 +158,6 @@ export default () => {
       .then(
         response => rssParse(response.data.body),
         () => {
-          appState.processingError = true;
-          appState.processingErrorObj = {
-            title: 'Load Error',
-            text: 'Failed to load feed. Maybe address unavailable',
-          };
           throw new Error();
         },
       )
@@ -175,10 +170,7 @@ export default () => {
           utils.updateFeeds(feedLink, currentFeedObject);
         },
         () => {
-          appState.processingErrorObj = {
-            title: 'Parsing Error',
-            text: 'Failed to process feed. Wrong data. Try another feed address',
-          };
+          throw new Error();
         },
       );
   };
@@ -187,11 +179,14 @@ export default () => {
     const feedsLinks = _.keys(appState.feedsLinks);
     const promise = Promise.all(feedsLinks.map(checkFeed));
     promise
-      .then(() => {
-        setTimeout(() => {
-          checkAllFeeds();
-        }, 5000);
-      });
+      .then(
+        () => {
+          setTimeout(checkAllFeeds, 5000);
+        },
+        () => {
+          setTimeout(checkAllFeeds, 5000);
+        },
+      );
   };
 
   watch(appState, 'isFeedsAdded', () => {
