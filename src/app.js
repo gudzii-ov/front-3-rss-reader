@@ -48,6 +48,7 @@ export default () => {
   inputField.addEventListener('input', inputHandler);
 
   const submitFormHandler = (evt) => {
+    evt.preventDefault();
     if (appState.isInputValid) {
       const feedLink = inputField.value;
       appState.feedLoading = true;
@@ -85,7 +86,6 @@ export default () => {
           },
         );
     }
-    evt.preventDefault();
   };
 
   form.addEventListener('submit', submitFormHandler);
