@@ -1,24 +1,8 @@
 import $ from 'jquery';
 import _ from 'lodash';
 
-const getFeedElement = (feedLink, feedObject) => {
-  const { feedTitle, feedDescription, items: feedItems } = feedObject;
-
-  const feedContainerElement = document.createElement('div');
-  feedContainerElement.classList.add('container');
-
-  const feedArticle = document.createElement('article');
-  feedContainerElement.appendChild(feedArticle);
-
-  const titleElement = document.createElement('h3');
-  titleElement.textContent = feedTitle;
-
-  const descriptionElement = document.createElement('p');
-  descriptionElement.textContent = feedDescription;
-
-  const itemsBlock = document.createElement('ul');
-  itemsBlock.classList.add('list-group');
-
+const getFeedItemsFragment = (feedLink, feedObject) => {
+  const { items: feedItems } = feedObject;
   const itemsFragment = document.createDocumentFragment();
   _.forOwn(feedItems, (itemObj, itemDate) => {
     const {
@@ -45,11 +29,48 @@ const getFeedElement = (feedLink, feedObject) => {
     itemsFragment.appendChild(itemElement);
   });
 
-  feedArticle.appendChild(titleElement);
-  feedArticle.appendChild(descriptionElement);
-  feedArticle.appendChild(itemsFragment);
+  return itemsFragment;
+};
+
+const getFeedElement = (feedLink, feedObject) => {
+  const { feedTitle, feedDescription } = feedObject;
+
+  const feedContainerElement = document.createElement('div');
+  feedContainerElement.classList.add('container');
+  feedContainerElement.setAttribute('data-feed-link', feedLink);
+
+  const titleElement = document.createElement('h3');
+  titleElement.textContent = feedTitle;
+  const descriptionElement = document.createElement('p');
+  descriptionElement.textContent = feedDescription;
+
+  const itemsBlock = document.createElement('ul');
+  itemsBlock.classList.add('list-group');
+
+  feedContainerElement.appendChild(titleElement);
+  feedContainerElement.appendChild(descriptionElement);
+  feedContainerElement.appendChild(itemsBlock);
+
+  const itemsFragment = getFeedItemsFragment(feedLink, feedObject);
+  itemsBlock.appendChild(itemsFragment);
 
   return feedContainerElement;
+};
+
+const updateFeeds = (feedLink, feedObject) => {
+  const feedContainerElement = document.querySelector(`div[data-feed-link="${feedLink}"]`);
+  const feedItemsElement = feedContainerElement.querySelector('ul');
+  const itemsFragment = getFeedItemsFragment(feedLink, feedObject);
+
+  feedItemsElement.innerHTML = '';
+  feedItemsElement.appendChild(itemsFragment);
+};
+
+const getNewFeeds = (oldFeedObj, newFeedObj) => {
+  const oldFeedsKeys = _.keys(oldFeedObj.items);
+  const newFeeds = _.omit(newFeedObj.items, oldFeedsKeys);
+
+  return { ...oldFeedObj, items: newFeeds };
 };
 
 const showLoadingWindow = () => {
@@ -73,5 +94,5 @@ const showModal = (title, message) => {
 };
 
 export default {
-  getFeedElement, showLoadingWindow, hideLoadingWindow, showModal,
+  getFeedElement, showLoadingWindow, hideLoadingWindow, showModal, getNewFeeds, updateFeeds,
 };

@@ -1,6 +1,7 @@
 import validator from 'validator';
 import WatchJS from 'melanke-watchjs';
 import axios from 'axios';
+import _ from 'lodash';
 import rssParse from './rss-parser';
 import utils from './utils';
 
@@ -9,6 +10,7 @@ const { watch } = WatchJS;
 export default () => {
   const appState = {
     isInputValid: true,
+    isFeedsAdded: false,
     feedsLinks: {},
     feedLoading: false,
     parsingSuccess: false,
@@ -71,6 +73,7 @@ export default () => {
           (feedObj) => {
             appState.currentFeed = feedLink;
             appState.feedsLinks[feedLink] = feedObj;
+            appState.isFeedsAdded = true;
             appState.parsingSuccess = true;
           },
           () => {
@@ -137,7 +140,6 @@ export default () => {
       const currentFeedObject = appState.feedsLinks[currentFeedLink];
       const feedElement = utils.getFeedElement(currentFeedLink, currentFeedObject);
       feedsBlock.appendChild(feedElement);
-      inputField.value = '';
       appState.isInputValid = true;
       appState.parsingSuccess = false;
     }
@@ -148,6 +150,54 @@ export default () => {
       const { title, description } = appState.descriptionBtn;
       utils.showModal(title, description);
       appState.descriptionBtn.clicked = false;
+    }
+  });
+
+  const checkFeed = (feedLink) => {
+    const feedCurrent = appState.feedsLinks[feedLink];
+    axios.get(`${corsProxy}${feedLink}`)
+      .then(
+        response => rssParse(response.data.body),
+        () => {
+          appState.processingError = true;
+          appState.processingErrorObj = {
+            title: 'Load Error',
+            text: 'Failed to load feed. Maybe address unavailable',
+          };
+          throw new Error();
+        },
+      )
+      .then(
+        (fetchedFeed) => {
+          const newFeeds = utils.getNewFeeds(feedCurrent, fetchedFeed);
+          const allFeeds = _.merge(newFeeds, feedCurrent);
+          appState.feedsLinks[feedLink] = allFeeds;
+          const currentFeedObject = appState.feedsLinks[feedLink];
+          utils.updateFeeds(feedLink, currentFeedObject);
+        },
+        () => {
+          appState.processingErrorObj = {
+            title: 'Parsing Error',
+            text: 'Failed to process feed. Wrong data. Try another feed address',
+          };
+        },
+      );
+  };
+
+  const checkAllFeeds = () => {
+    const feedsLinks = _.keys(appState.feedsLinks);
+    const promise = Promise.all(feedsLinks.map(checkFeed));
+    promise
+      .then(() => {
+        setTimeout(() => {
+          checkAllFeeds();
+        }, 5000);
+      });
+  };
+
+  watch(appState, 'isFeedsAdded', () => {
+    if (appState.isFeedsAdded) {
+      checkAllFeeds();
     }
   });
 };
