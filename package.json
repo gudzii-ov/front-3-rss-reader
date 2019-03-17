@@ -22,7 +22,7 @@
     "lodash": "^4.17.11",
     "melanke-watchjs": "^1.5.0",
     "npm": "^6.4.1",
-    "popper.js": "^1.14.5",
+    "popper.js": "^1.14.7",
     "rss-parser": "^3.5.3",
     "validator": "^10.9.0"
   },
@@ -40,8 +40,11 @@
     "eslint-config-airbnb": "^16.1.0",
     "eslint-plugin-babel": "^5.1.0",
     "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-react": "^7.12.4",
     "html-webpack-plugin": "^3.2.0",
     "style-loader": "^0.23.1",
+    "surge": "^0.20.3",
     "webpack": "^4.25.1",
     "webpack-cli": "^3.1.2",
     "webpack-serve": "^2.0.2"
