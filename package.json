@@ -1,6 +1,6 @@
 {
   "name": "rss-reader-gudzii-ov",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Online RSS reader",
   "scripts": {
     "webpack-serve": "webpack-serve",
