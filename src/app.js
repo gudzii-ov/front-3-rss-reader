@@ -30,7 +30,7 @@ export default () => {
 
   const feedsBlock = document.querySelector('.feeds-list');
 
-  const corsProxy = 'https://cors-proxy.htmldriven.com/?url=';
+  const corsProxy = 'https://cors-anywhere.herokuapp.com/';
 
   const validateInput = (feedLink) => {
     const isInputEmpty = inputField.value === '';
